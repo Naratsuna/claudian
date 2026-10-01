@@ -74,6 +74,9 @@ function getCodexRuntimeFingerprintState(settings: Record<string, unknown>): {
     ...cliPathInputs,
     installationMethod: codexSettings.installationMethod,
     wslDistroOverride: codexSettings.wslDistroOverride,
+    // Absent → MISSING_VALUE, same as an absent key, so unbound users'
+    // fingerprints stay stable.
+    larkBridgeProfile: codexSettings.larkBridgeProfile || undefined,
   };
   const environment = parseEnvironmentVariables(environmentText);
   return {
@@ -83,6 +86,7 @@ function getCodexRuntimeFingerprintState(settings: Record<string, unknown>): {
       hasCLIPathFingerprintInputs(cliPathInputs)
       || codexSettings.installationMethod === 'wsl'
       || codexSettings.wslDistroOverride
+      || codexSettings.larkBridgeProfile
       || ENV_HASH_KEYS.some(key => Object.prototype.hasOwnProperty.call(environment, key))
     ),
     providerEnabled: codexSettings.enabled,

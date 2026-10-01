@@ -4,6 +4,7 @@ import type {
   SDKControlInitializeResponse,
 } from '@anthropic-ai/claude-agent-sdk';
 
+import { buildLarkBridgeLaunchEnv, resolveLarkChannelHome } from '../../../core/larkbridge/LarkBridgeConfig';
 import type { ProviderHost } from '../../../core/providers/ProviderHost';
 import { throwIfAborted, toAbortError } from '../../../utils/abort';
 import { getEnhancedPath, parseEnvironmentVariables } from '../../../utils/env';
@@ -38,11 +39,25 @@ export function buildClaudeLaunchOptions(
 ): ClaudeLaunchOptions {
   const customEnv = parseEnvironmentVariables(host.getActiveEnvironmentVariables('claude'));
   const enhancedPath = getEnhancedPath(customEnv.PATH, cliPath);
-  const { loadUserSettings } = getClaudeProviderSettings(overrides.settings ?? host.settings);
+  const claudeSettings = getClaudeProviderSettings(overrides.settings ?? host.settings);
+  const { loadUserSettings } = claudeSettings;
+  // Bridge env wins over custom env for its own keys — a stale user-entered
+  // LARKSUITE_CLI_CONFIG_DIR or CODEX_HOME must not break bridge identity.
+  const bridgeEnv = buildLarkBridgeLaunchEnv(
+    resolveLarkChannelHome(),
+    claudeSettings.larkBridgeProfile,
+    'claude',
+  );
   return {
     cwd,
     pathToClaudeCodeExecutable: cliPath,
-    env: { ...overrides.envDefaults, ...process.env, ...customEnv, PATH: enhancedPath },
+    env: {
+      ...overrides.envDefaults,
+      ...process.env,
+      ...customEnv,
+      ...bridgeEnv,
+      PATH: enhancedPath,
+    },
     settingSources: resolveClaudeSettingSources(loadUserSettings),
     spawnClaudeCodeProcess: createCustomSpawnFunction(enhancedPath),
   };

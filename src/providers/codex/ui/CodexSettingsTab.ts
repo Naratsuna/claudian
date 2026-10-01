@@ -10,6 +10,7 @@ import { ProviderSettingsCoordinator } from '../../../core/providers/ProviderSet
 import type { ProviderSettingsTabRenderer } from '../../../core/providers/types';
 import { t } from '../../../i18n/i18n';
 import { renderEnvironmentSettingsSection } from '../../../shared/settings/EnvironmentSettingsSection';
+import { type LarkBridgeSettingControl, renderLarkBridgeSetting } from '../../../shared/settings/LarkBridgeSetting';
 import type { ProviderEnablementSettingOptions } from '../../../shared/settings/ProviderEnablementSetting';
 import {
   renderLastEnabledProviderWarning,
@@ -32,6 +33,8 @@ export function createCodexSettingsTabRenderer(
       const hostnameKey = context.plugin.storage.installationKey;
       const isWindowsHost = process.platform === 'win32';
       let installationMethod = codexSettings.installationMethod;
+      // Assigned during render, below; read by the installationMethod onChange.
+      const larkBridge = { control: undefined as LarkBridgeSettingControl | undefined };
 
       // --- Setup ---
 
@@ -96,6 +99,7 @@ export function createCodexSettingsTabRenderer(
                   () => codexWorkspace.cliResolver.reset(),
                 );
                 refreshInstallationMethodUI();
+                larkBridge.control?.setBindingSupported(isWindowsHost && installationMethod !== 'wsl');
                 void cliPathControl.refresh();
               });
           });
@@ -317,6 +321,22 @@ export function createCodexSettingsTabRenderer(
         desc: t('settings.codex.environment.desc'),
         placeholder: `OPENAI_API_KEY=your-key\nOPENAI_BASE_URL=https://api.openai.com/v1\nCODEX_SANDBOX=workspace-write`,
         renderCustomContextLimits: (target) => context.renderCustomContextLimits(target, 'codex'),
+      });
+
+      // --- Lark Channel Bridge ---
+
+      larkBridge.control = renderLarkBridgeSetting({
+        container,
+        plugin: context.plugin,
+        providerId: 'codex',
+        bindingSupported: isWindowsHost && installationMethod !== 'wsl',
+        getBoundProfile: () => getCodexProviderSettings(settingsBag).larkBridgeProfile,
+        onBind: async (profile) => {
+          await context.plugin.applyProviderRuntimeSettings(['codex'], settings => {
+            updateCodexProviderSettings(settings, { larkBridgeProfile: profile });
+          });
+        },
+        getCustomEnvText: () => context.plugin.getEnvironmentVariablesForScope('provider:codex'),
       });
       return modelPicker;
     },

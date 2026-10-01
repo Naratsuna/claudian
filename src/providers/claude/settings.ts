@@ -25,6 +25,8 @@ export interface ClaudeProviderSettings {
   modelAliases: Record<string, string>;
   environmentVariables: string;
   environmentHash: string;
+  /** Bound lark-channel-bridge profile name; '' = unbound. */
+  larkBridgeProfile: string;
 }
 
 export const DEFAULT_CLAUDE_PROVIDER_SETTINGS: Readonly<ClaudeProviderSettings> = Object.freeze({
@@ -41,6 +43,7 @@ export const DEFAULT_CLAUDE_PROVIDER_SETTINGS: Readonly<ClaudeProviderSettings> 
   modelAliases: {},
   environmentVariables: '',
   environmentHash: '',
+  larkBridgeProfile: '',
 });
 
 export function getClaudeProviderSettings(
@@ -83,6 +86,10 @@ export function getClaudeProviderSettings(
     environmentHash: readStoredString(
       config.environmentHash,
       DEFAULT_CLAUDE_PROVIDER_SETTINGS.environmentHash,
+    ),
+    larkBridgeProfile: readStoredString(
+      config.larkBridgeProfile,
+      DEFAULT_CLAUDE_PROVIDER_SETTINGS.larkBridgeProfile,
     ),
   };
 }

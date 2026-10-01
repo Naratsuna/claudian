@@ -12,6 +12,7 @@ import { ProviderSettingsCoordinator } from '../../../core/providers/ProviderSet
 import type { ProviderSettingsTabRenderer } from '../../../core/providers/types';
 import { t } from '../../../i18n/i18n';
 import { renderEnvironmentSettingsSection } from '../../../shared/settings/EnvironmentSettingsSection';
+import { renderLarkBridgeSetting } from '../../../shared/settings/LarkBridgeSetting';
 import type { ProviderEnablementSettingOptions } from '../../../shared/settings/ProviderEnablementSetting';
 import { renderLastEnabledProviderWarning, renderProviderModelEnablementWarning } from '../../../shared/settings/ProviderModelEnablementWarning';
 import { renderProviderModelsSection } from '../../../shared/settings/ProviderModelsSection';
@@ -189,6 +190,22 @@ export function createClaudeSettingsTabRenderer(
         desc: t('settings.customVariables.desc'),
         placeholder: 'ANTHROPIC_API_KEY=your-key\nANTHROPIC_BASE_URL=https://api.example.com\nANTHROPIC_MODEL=custom-model\nCLAUDE_CODE_USE_BEDROCK=1',
         renderCustomContextLimits: (target) => context.renderCustomContextLimits(target, 'claude'),
+      });
+
+      // --- Lark Channel Bridge ---
+
+      renderLarkBridgeSetting({
+        container,
+        plugin: context.plugin,
+        providerId: 'claude',
+        bindingSupported: true,
+        getBoundProfile: () => getClaudeProviderSettings(settingsBag).larkBridgeProfile,
+        onBind: async (profile) => {
+          await context.plugin.applyProviderRuntimeSettings(['claude'], settings => {
+            updateClaudeProviderSettings(settings, { larkBridgeProfile: profile });
+          });
+        },
+        getCustomEnvText: () => context.plugin.getEnvironmentVariablesForScope('provider:claude'),
       });
 
       // --- Experimental ---

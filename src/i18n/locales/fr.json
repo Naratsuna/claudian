@@ -513,6 +513,36 @@
         "failed": "Échec de la synchronisation : {message}",
         "summary": "Déplacés {moved}, convertis {converted}, à la corbeille {trashed}, {unlinked} lien(s) supprimé(s)."
       }
+    },
+    "larkBridge": {
+      "heading": "Lark Channel Bridge",
+      "name": "Bound profile",
+      "desc": "Launch this agent with the selected lark-channel-bridge profile: same bot identity, shared ~/.claude / ~/.codex memory, and lark-cli (Feishu) access. Selecting “Not bound” clears the binding.",
+      "unbound": "Not bound",
+      "refresh": "Re-detect profiles",
+      "notInstalled": {
+        "desc": "lark-channel-bridge was not found ({configPath} is missing). Install it and run the setup wizard: npm install -g lark-channel-bridge, then lark-channel-bridge run (or one-off: npx lark-channel-bridge run)."
+      },
+      "invalidConfig": {
+        "desc": "Could not read the bridge config at {configPath}: {error}. Update or reinstall lark-channel-bridge."
+      },
+      "noProfiles": {
+        "desc": "No {kind} profiles found in the bridge config. Create one with lark-channel-bridge profile create, or via the lark-channel-bridge run wizard."
+      },
+      "bindingMissing": "Bound profile \"{name}\" no longer exists in the bridge config. Pick another profile.",
+      "workspace": {
+        "label": "Profile default workspace (fallback for new Feishu chats): {path}",
+        "unset": "The profile has no default workspace. Feishu-side runs start in the bridge's default workspace, so they cannot operate this vault and will not share sessions with Obsidian.",
+        "mismatch": "Profile default workspace ({workspace}) differs from this vault ({vault}). Feishu-side runs only share sessions with Obsidian and can operate this vault when the working directory matches. Fix: send /cd {vault} in the Feishu chat, or set the profile's default workspace to the vault in the bridge config."
+      },
+      "wsl": {
+        "unsupported": "Lark bridge binding requires the native Windows Codex installation. WSL mode cannot receive the bridge environment variables."
+      },
+      "codexHome": {
+        "conflict": "Your custom environment variables define CODEX_HOME, but the bound profile inherits the default ~/.codex. The custom value will pull Codex away from the bridge identity — remove CODEX_HOME from custom variables or set codexHome on the profile."
+      },
+      "copyCd": "Copy the fix command \"/cd {vault}\" to paste into the Feishu chat",
+      "copied": "Copied \"/cd {vault}\". Paste it in the Feishu chat to switch that chat to this vault."
     }
   }
 }

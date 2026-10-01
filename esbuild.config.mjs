@@ -25,7 +25,9 @@ const { createCompressedStaticAssetsPlugin } = compressedStaticAssetsHelpers;
 // Load .env.local if it exists
 if (existsSync('.env.local')) {
   const envContent = readFileSync('.env.local', 'utf-8');
-  for (const line of envContent.split('\n')) {
+  // Windows editors write CRLF; a trailing \r would poison the value (e.g. a
+  // vault path that existsSync never matches), so strip it per line.
+  for (const line of envContent.split(/\r?\n/)) {
     const match = line.match(/^([^=]+)=["']?(.+?)["']?$/);
     if (match && !process.env[match[1]]) {
       process.env[match[1]] = match[2];

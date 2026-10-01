@@ -25,6 +25,7 @@ interface FingerprintInputs {
   environmentText: string;
   environment: Record<string, string>;
   cliPathInputs: CLIPathFingerprintInputs;
+  larkBridgeProfile: string;
   savedFingerprint: string;
 }
 
@@ -39,13 +40,24 @@ function readFingerprintInputs(settings: Record<string, unknown>): FingerprintIn
       claudeSettings.cliPathsByHost[getInstallationKey()],
       claudeSettings.cliPath,
     ),
+    larkBridgeProfile: claudeSettings.larkBridgeProfile,
     savedFingerprint: claudeSettings.environmentHash,
   };
 }
 
-function computeRuntimeFingerprint({ environmentText, environment, cliPathInputs }: FingerprintInputs): string {
+function computeRuntimeFingerprint({
+  environmentText,
+  environment,
+  cliPathInputs,
+  larkBridgeProfile,
+}: FingerprintInputs): string {
   return createRuntimeInputFingerprint({
-    additionalInputs: cliPathInputs,
+    additionalInputs: {
+      ...cliPathInputs,
+      // Mapped to MISSING_VALUE when absent — same as an absent key, so
+      // unbound users' fingerprints stay stable.
+      larkBridgeProfile: larkBridgeProfile || undefined,
+    },
     // Keep existing default-home fingerprints stable when no override is configured.
     environmentKeys: ALL_FINGERPRINT_ENV_KEYS.filter(key => (
       !NATIVE_HOME_ENV_KEYS.includes(key) || Object.prototype.hasOwnProperty.call(environment, key)
@@ -54,8 +66,9 @@ function computeRuntimeFingerprint({ environmentText, environment, cliPathInputs
   });
 }
 
-function hasFingerprintInputs({ environment, cliPathInputs }: FingerprintInputs): boolean {
+function hasFingerprintInputs({ environment, cliPathInputs, larkBridgeProfile }: FingerprintInputs): boolean {
   return hasCLIPathFingerprintInputs(cliPathInputs)
+    || Boolean(larkBridgeProfile)
     || ALL_FINGERPRINT_ENV_KEYS.some(key => Object.prototype.hasOwnProperty.call(environment, key));
 }
 

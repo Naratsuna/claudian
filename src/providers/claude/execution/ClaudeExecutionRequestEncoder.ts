@@ -204,6 +204,7 @@ export class ClaudeExecutionRequestEncoder {
         cliPath,
         settingSources: options.settingSources,
         enableChrome: claudeSettings.enableChrome,
+        larkBridgeProfile: claudeSettings.larkBridgeProfile,
         persistSession: options.persistSession,
       }),
       allowedTools: policy.allowedTools,

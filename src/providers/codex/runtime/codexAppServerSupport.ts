@@ -1,3 +1,4 @@
+import { buildLarkBridgeLaunchEnv, resolveLarkChannelHome } from '../../../core/larkbridge/LarkBridgeConfig';
 import type { ProviderHost } from '../../../core/providers/ProviderHost';
 import type {
   ProviderId,
@@ -5,6 +6,7 @@ import type {
 } from '../../../core/providers/types';
 import { getEnhancedPath, parseEnvironmentVariables } from '../../../utils/env';
 import { getVaultPath } from '../../../utils/path';
+import { getCodexProviderSettings } from '../settings';
 import type { InitializeResult } from './codexAppServerTypes';
 import { resolveCodexExecutionTargetAsync } from './CodexExecutionTargetResolver';
 import { buildCodexLaunchSpec } from './CodexLaunchSpecBuilder';
@@ -29,10 +31,18 @@ export function buildCodexAppServerEnvironment(
     Object.entries(process.env).filter((entry): entry is [string, string] => entry[1] !== undefined),
   );
   const enhancedPath = getEnhancedPath(customEnv.PATH);
+  // Bridge env wins over custom env for its own keys (see buildLarkBridgeLaunchEnv);
+  // in inherit mode no CODEX_HOME is set and a user-entered one stays as-is.
+  const bridgeEnv = buildLarkBridgeLaunchEnv(
+    resolveLarkChannelHome(),
+    getCodexProviderSettings(plugin.settings).larkBridgeProfile,
+    'codex',
+  );
 
   return {
     ...baseEnv,
     ...customEnv,
+    ...bridgeEnv,
     PATH: enhancedPath,
   };
 }

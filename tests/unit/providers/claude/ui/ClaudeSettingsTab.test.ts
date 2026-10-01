@@ -87,6 +87,20 @@ jest.mock('obsidian', () => {
       callback(component);
       return this;
     }
+
+    addExtraButton(callback: (button: MockExtraButtonComponent) => void) {
+      const button: MockExtraButtonComponent = {
+        onClickCallback: null,
+        setIcon: () => button,
+        setTooltip: () => button,
+        onClick: (cb: () => void) => {
+          button.onClickCallback = cb;
+          return button;
+        },
+      };
+      callback(button);
+      return this;
+    }
   }
 
   return {
@@ -156,6 +170,13 @@ interface MockToggleComponent {
   onChangeCallback: ((value: boolean) => Promise<void> | void) | null;
   setValue: jest.MockedFunction<(value: boolean) => MockToggleComponent>;
   onChange: jest.MockedFunction<(callback: (value: boolean) => Promise<void> | void) => MockToggleComponent>;
+}
+
+interface MockExtraButtonComponent {
+  onClickCallback: (() => void) | null;
+  setIcon: () => MockExtraButtonComponent;
+  setTooltip: () => MockExtraButtonComponent;
+  onClick: (callback: () => void) => MockExtraButtonComponent;
 }
 
 const createdSettings: Array<{

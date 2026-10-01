@@ -46,6 +46,8 @@ export interface CodexProviderConfig {
   catalogFingerprint: string;
   installationMethodsByHost: HostnameInstallationMethods;
   wslDistroOverridesByHost: HostnameCLIPaths;
+  /** Bound lark-channel-bridge profile name; '' = unbound. */
+  larkBridgeProfile: string;
 }
 
 export interface NormalizeCodexStoredConfigContext {
@@ -116,6 +118,7 @@ export interface CodexProviderSettings {
   installationMethodsByHost: CodexProviderConfig['installationMethodsByHost'];
   wslDistroOverride: string;
   wslDistroOverridesByHost: CodexProviderConfig['wslDistroOverridesByHost'];
+  larkBridgeProfile: string;
 }
 
 export const DEFAULT_CODEX_PROVIDER_CONFIG: Readonly<CodexProviderConfig> = Object.freeze({
@@ -135,6 +138,7 @@ export const DEFAULT_CODEX_PROVIDER_CONFIG: Readonly<CodexProviderConfig> = Obje
   catalogFingerprint: '',
   installationMethodsByHost: {},
   wslDistroOverridesByHost: {},
+  larkBridgeProfile: '',
 });
 
 export const DEFAULT_CODEX_PROVIDER_SETTINGS: Readonly<CodexProviderSettings> = Object.freeze({
@@ -349,6 +353,10 @@ function getCodexStoredConfig(
     ),
     installationMethodsByHost,
     wslDistroOverridesByHost,
+    larkBridgeProfile: readStoredString(
+      config.larkBridgeProfile,
+      DEFAULT_CODEX_PROVIDER_CONFIG.larkBridgeProfile,
+    ),
   };
 }
 
@@ -499,6 +507,7 @@ export function updateCodexProviderSettings(
     catalogFingerprint: next.catalogFingerprint,
     installationMethodsByHost,
     wslDistroOverridesByHost,
+    larkBridgeProfile: next.larkBridgeProfile,
   });
   return next;
 }

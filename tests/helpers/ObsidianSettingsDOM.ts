@@ -44,17 +44,33 @@ class DropdownComponent {
   }
 }
 
+class ExtraButtonComponent {
+  onClick(callback: () => void): this {
+    this.clickHandler = callback;
+    return this;
+  }
+  clickHandler: (() => void) | null = null;
+  setIcon(_icon: string): this { return this; }
+  setTooltip(_tooltip: string): this { return this; }
+}
+
 export class Setting {
   private readonly element: HTMLElement;
-  constructor(container: HTMLElement) { this.element = container.appendChild(document.createElement('div')); }
+  readonly settingEl: HTMLElement;
+  constructor(container: HTMLElement) {
+    this.element = container.appendChild(document.createElement('div'));
+    this.settingEl = this.element;
+  }
   setName(value: string): this { this.element.appendChild(document.createElement('div')).textContent = value; return this; }
   setDesc(value: string): this { this.element.appendChild(document.createElement('div')).textContent = value; return this; }
   setClass(value: string): this { this.element.classList.add(value); return this; }
+  setHeading(): this { this.element.classList.add('setting-item-heading'); return this; }
   addText(callback: (component: TextComponent) => void): this { callback(new TextComponent(this.element)); return this; }
   addTextArea(callback: (component: TextComponent<HTMLTextAreaElement>) => void): this {
     callback(new TextComponent<HTMLTextAreaElement>(this.element, 'textarea')); return this;
   }
   addDropdown(callback: (component: DropdownComponent) => void): this { callback(new DropdownComponent(this.element)); return this; }
+  addExtraButton(callback: (component: ExtraButtonComponent) => void): this { callback(new ExtraButtonComponent()); return this; }
 }
 
 export const Notice = jest.fn();

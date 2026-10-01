@@ -151,6 +151,17 @@
   color: var(--text-error);
 }
 
+.claudian-lark-bridge-cd-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.claudian-lark-bridge-cd-row .claudian-settings-action-btn {
+  flex: none;
+  align-self: center;
+}
+
 .claudian-setting-validation {
   font-size: var(--font-ui-smaller);
   margin-top: -0.5em;

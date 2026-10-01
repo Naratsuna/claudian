@@ -513,6 +513,36 @@
         "failed": "同步失敗:{message}",
         "summary": "已移動 {moved},已轉換 {converted},已移至垃圾桶 {trashed},已移除 {unlinked} 個連結。"
       }
+    },
+    "larkBridge": {
+      "heading": "飛書橋接（Lark Channel Bridge）",
+      "name": "綁定 Profile",
+      "desc": "使用選定的 lark-channel-bridge profile 啟動此 agent：相同的機器人身分、共用 ~/.claude 與 ~/.codex 記憶，並可用 lark-cli（飛書）能力。選擇「未綁定」即清除綁定。",
+      "unbound": "未綁定",
+      "refresh": "重新偵測 profile",
+      "notInstalled": {
+        "desc": "未找到 lark-channel-bridge（缺少 {configPath}）。請先安裝並執行初始化精靈：npm install -g lark-channel-bridge，然後執行 lark-channel-bridge run（或一次性執行：npx lark-channel-bridge run）。"
+      },
+      "invalidConfig": {
+        "desc": "無法讀取橋接設定 {configPath}：{error}。請更新或重裝 lark-channel-bridge。"
+      },
+      "noProfiles": {
+        "desc": "橋接設定中沒有 {kind} 類型的 profile。請透過 lark-channel-bridge profile create 或 lark-channel-bridge run 精靈建立。"
+      },
+      "bindingMissing": "綁定的 profile「{name}」在橋接設定中已不存在，請重新選擇。",
+      "workspace": {
+        "label": "Profile 預設工作區（新飛書聊天的回退值）：{path}",
+        "unset": "該 profile 未設定預設工作區。飛書側執行將落在橋接的預設工作區，無法操作本 vault，也不會與 Obsidian 共用會話。",
+        "mismatch": "Profile 預設工作區（{workspace}）與目前 vault（{vault}）不一致。工作目錄一致時飛書側會話才與 Obsidian 共用、才能操作本 vault。修復方式：在對應飛書聊天中傳送 /cd {vault}，或在橋接設定中把該 profile 的預設工作區設為 vault。"
+      },
+      "wsl": {
+        "unsupported": "飛書橋接綁定僅支援原生 Windows 安裝的 Codex；WSL 模式無法接收橋接環境變數。"
+      },
+      "codexHome": {
+        "conflict": "你的自訂環境變數中定義了 CODEX_HOME，而綁定的 profile 繼承預設的 ~/.codex。自訂值會讓 Codex 偏離橋接身分——請從自訂變數中移除 CODEX_HOME，或在 profile 上設定 codexHome。"
+      },
+      "copyCd": "複製修復命令「/cd {vault}」，貼到對應的飛書聊天中執行",
+      "copied": "已複製「/cd {vault}」，請貼到對應的飛書聊天中傳送。"
     }
   }
 }
